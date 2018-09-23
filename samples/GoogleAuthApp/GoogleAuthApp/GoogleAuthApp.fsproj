@@ -12,12 +12,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\Giraffe\Giraffe.fsproj" />
+    <Compile Include="HttpsConfig.fs" />
+    <Compile Include="Program.fs" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="HttpsConfig.fs" />
-    <Compile Include="Program.fs" />
+    <ProjectReference Include="..\..\..\src\Okapi\Okapi.fsproj" />
   </ItemGroup>
 
 </Project>

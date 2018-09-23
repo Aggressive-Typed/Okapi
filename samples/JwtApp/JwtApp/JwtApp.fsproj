@@ -12,11 +12,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\Giraffe\Giraffe.fsproj" />
+    <Compile Include="Program.fs" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="Program.fs" />
+    <ProjectReference Include="..\..\..\src\Okapi\Okapi.fsproj" />
   </ItemGroup>
 
 </Project>

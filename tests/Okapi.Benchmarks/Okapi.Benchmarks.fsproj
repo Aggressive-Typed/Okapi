@@ -18,6 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Giraffe\Giraffe.fsproj" />
+    <ProjectReference Include="..\..\src\Okapi\Okapi.fsproj" />
   </ItemGroup>
 </Project>
