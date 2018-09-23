@@ -8,6 +8,7 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open Xunit
 open NSubstitute
 open Okapi
+open Hopac
 
 // ---------------------------------
 // route Tests
@@ -27,7 +28,7 @@ let ``route: GET "/" returns "Hello World"`` () =
     ctx.Response.Body <- new MemoryStream()
     let expected = "Hello World"
 
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -49,7 +50,7 @@ let ``route: GET "/foo" returns "bar"`` () =
     ctx.Response.Body <- new MemoryStream()
     let expected = "bar"
 
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -71,7 +72,7 @@ let ``route: GET "/FOO" returns 404 "Not found"`` () =
     ctx.Response.Body <- new MemoryStream()
     let expected = "Not found"
 
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -103,7 +104,7 @@ let ``GET "/JSON" returns "BaR"`` () =
     ctx.Response.Body <- new MemoryStream()
     let expected = "BaR"
 
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -129,7 +130,7 @@ let ``routex: GET "/" returns "Hello World"`` () =
     ctx.Response.Body <- new MemoryStream()
     let expected = "Hello World"
 
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -151,7 +152,7 @@ let ``routex: GET "/foo" returns "bar"`` () =
     ctx.Response.Body <- new MemoryStream()
     let expected = "bar"
 
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -173,7 +174,7 @@ let ``routex: GET "/FOO" returns 404 "Not found"`` () =
     ctx.Response.Body <- new MemoryStream()
     let expected = "Not found"
 
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -198,7 +199,7 @@ let ``routex: GET "/foo///" returns "bar"`` () =
     ctx.Response.Body <- new MemoryStream()
     let expected = "bar"
 
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -220,7 +221,7 @@ let ``routex: GET "/foo2" returns "bar"`` () =
     ctx.Response.Body <- new MemoryStream()
     let expected = "bar"
 
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -246,7 +247,7 @@ let ``routeCix: GET "/CaSe///" returns "right"`` () =
     ctx.Response.Body <- new MemoryStream()
     let expected = "right"
 
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -274,7 +275,7 @@ let ``routef: GET "/foo/blah blah/bar" returns "blah blah"`` () =
     ctx.Response.Body <- new MemoryStream()
     let expected = "blah blah"
 
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -298,7 +299,7 @@ let ``routef: GET "/foo/johndoe/59" returns "Name: johndoe, Age: 59"`` () =
     ctx.Response.Body <- new MemoryStream()
     let expected = "Name: johndoe, Age: 59"
 
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -322,7 +323,7 @@ let ``routef: GET "/foo/b%2Fc/bar" returns "b%2Fc"`` () =
     ctx.Response.Body <- new MemoryStream()
     let expected = "b/c"
 
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -346,7 +347,7 @@ let ``routef: GET "/foo/a%2Fb%2Bc.d%2Ce/bar" returns "a%2Fb%2Bc.d%2Ce"`` () =
     ctx.Response.Body <- new MemoryStream()
     let expected = "a/b%2Bc.d%2Ce"
 
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -371,7 +372,7 @@ let ``routef: GET "/foo/%O/bar/%O" returns "Guid1: ..., Guid2: ..."`` () =
     ctx.Response.Body <- new MemoryStream()
     let expected = "Guid1: 4ec87f06-4d1e-41b4-9342-ab1aead1f99d, Guid2: 2a6c9185-95d9-4d8c-80a6-575f99c2a716"
 
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -396,7 +397,7 @@ let ``routef: GET "/foo/%u/bar/%u" returns "Id1: ..., Id2: ..."`` () =
     ctx.Response.Body <- new MemoryStream()
     let expected = "Id1: 12635000945053400782, Id2: 16547050693006839099"
 
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -426,7 +427,7 @@ let ``POST "/POsT/1" returns "1"`` () =
     ctx.Response.Body <- new MemoryStream()
     let expected = "1"
 
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -452,7 +453,7 @@ let ``POST "/POsT/523" returns "523"`` () =
     ctx.Response.Body <- new MemoryStream()
     let expected = "523"
 
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -489,7 +490,7 @@ let ``routeBind: Route has matching union type``() =
     ctx.Request.Path.ReturnsForAnyArgs (PathString("/credit")) |> ignore
     ctx.Response.Body <- new MemoryStream()
     let expected = "Credit"
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -509,7 +510,7 @@ let ``routeBind: Route doesn't match union type``() =
     ctx.Request.Path.ReturnsForAnyArgs (PathString("/wrong")) |> ignore
     ctx.Response.Body <- new MemoryStream()
     let expected = "Not found"
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -524,7 +525,7 @@ let ``routeBind: Normal route``() =
     ctx.Request.Method.ReturnsForAnyArgs "GET" |> ignore
     ctx.Request.Path.ReturnsForAnyArgs (PathString("/Hello/1/f40580b1-d55b-4fe2-b6fb-ca4f90749a9d")) |> ignore
     ctx.Response.Body <- new MemoryStream()
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -541,7 +542,7 @@ let ``routeBind: Normal route with trailing slash``() =
     ctx.Request.Method.ReturnsForAnyArgs "GET" |> ignore
     ctx.Request.Path.ReturnsForAnyArgs (PathString("/Hello/1/f40580b1-d55b-4fe2-b6fb-ca4f90749a9d/")) |> ignore
     ctx.Response.Body <- new MemoryStream()
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -558,7 +559,7 @@ let ``routeBind: Route with (/*) matches mutliple trailing slashes``() =
     ctx.Request.Method.ReturnsForAnyArgs "GET" |> ignore
     ctx.Request.Path.ReturnsForAnyArgs (PathString("/Hello/1/f40580b1-d55b-4fe2-b6fb-ca4f90749a9d///")) |> ignore
     ctx.Response.Body <- new MemoryStream()
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -575,7 +576,7 @@ let ``routeBind: Route with (/*) matches no trailing slash``() =
     ctx.Request.Method.ReturnsForAnyArgs "GET" |> ignore
     ctx.Request.Path.ReturnsForAnyArgs (PathString("/Hello/2/f40580b1-d55b-4fe2-b6fb-ca4f90749a9d")) |> ignore
     ctx.Response.Body <- new MemoryStream()
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -592,7 +593,7 @@ let ``routeBind: Route with (/?) matches single trailing slash``() =
     ctx.Request.Method.ReturnsForAnyArgs "GET" |> ignore
     ctx.Request.Path.ReturnsForAnyArgs (PathString("/Hello/3/f40580b1-d55b-4fe2-b6fb-ca4f90749a9d/")) |> ignore
     ctx.Response.Body <- new MemoryStream()
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -609,7 +610,7 @@ let ``routeBind: Route with (/?) matches no trailing slash``() =
     ctx.Request.Method.ReturnsForAnyArgs "GET" |> ignore
     ctx.Request.Path.ReturnsForAnyArgs (PathString("/Hello/4/f40580b1-d55b-4fe2-b6fb-ca4f90749a9d")) |> ignore
     ctx.Response.Body <- new MemoryStream()
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -626,7 +627,7 @@ let ``routeBind: Route with non parameterised part``() =
     ctx.Request.Method.ReturnsForAnyArgs "GET" |> ignore
     ctx.Request.Path.ReturnsForAnyArgs (PathString("/api/Hello/1/f40580b1-d55b-4fe2-b6fb-ca4f90749a9d")) |> ignore
     ctx.Response.Body <- new MemoryStream()
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -643,7 +644,7 @@ let ``routeBind: Route with non parameterised part and with Guid binding``() =
     ctx.Request.Method.ReturnsForAnyArgs "GET" |> ignore
     ctx.Request.Path.ReturnsForAnyArgs (PathString("/api/f40580b1-d55b-4fe2-b6fb-ca4f90749a9d")) |> ignore
     ctx.Response.Body <- new MemoryStream()
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -660,7 +661,7 @@ let ``routeBind: Route with non parameterised part and with (/?)``() =
     ctx.Request.Method.ReturnsForAnyArgs "GET" |> ignore
     ctx.Request.Path.ReturnsForAnyArgs (PathString("/api/f40580b1-d55b-4fe2-b6fb-ca4f90749a9d/")) |> ignore
     ctx.Response.Body <- new MemoryStream()
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -678,7 +679,7 @@ let ``routeBind: Route nested after subRoute``() =
     ctx.Request.Method.ReturnsForAnyArgs "GET" |> ignore
     ctx.Request.Path.ReturnsForAnyArgs (PathString("/test/api/f40580b1-d55b-4fe2-b6fb-ca4f90749a9d/")) |> ignore
     ctx.Response.Body <- new MemoryStream()
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -713,7 +714,7 @@ let ``subRoute: Route with empty route`` () =
     ctx.Response.Body <- new MemoryStream()
     let expected = "api root"
 
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -742,7 +743,7 @@ let ``subRoute: Normal nested route after subRoute`` () =
     ctx.Response.Body <- new MemoryStream()
     let expected = "users"
 
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -753,7 +754,7 @@ let ``subRoute: Normal nested route after subRoute`` () =
 [<Fact>]
 let ``subRoute: Route after subRoute has same beginning of path`` () =
 
-    task {
+    job {
         let ctx = Substitute.For<HttpContext>()
 
         let app =
@@ -811,7 +812,7 @@ let ``subRoute: Nested sub routes`` () =
     ctx.Response.Body <- new MemoryStream()
     let expected = "users v2"
 
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -850,7 +851,7 @@ let ``subRoute: Multiple nested sub routes`` () =
     ctx.Response.Body <- new MemoryStream()
     let expected = "correct admin2"
 
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -890,7 +891,7 @@ let ``subRoute: Route after nested sub routes has same beginning of path`` () =
     ctx.Response.Body <- new MemoryStream()
     let expected = "else"
 
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -918,7 +919,7 @@ let ``subRoute: routef inside subRoute`` () =
     ctx.Response.Body <- new MemoryStream()
     let expected = "yadayada"
 
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -960,7 +961,7 @@ let ``subRoutef: GET "/" returns "Not found"`` () =
     ctx.Response.Body <- new MemoryStream()
     let expected = "Not found"
 
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -987,7 +988,7 @@ let ``subRoutef: GET "/bar" returns "foo"`` () =
     ctx.Response.Body <- new MemoryStream()
     let expected = "foo"
 
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -1014,7 +1015,7 @@ let ``subRoutef: GET "/John/5/foo" returns "bar"`` () =
     ctx.Response.Body <- new MemoryStream()
     let expected = "bar"
 
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -1041,7 +1042,7 @@ let ``subRoutef: GET "/en/10/Julia" returns "Hello Julia! Lang: en, Version: 10"
     ctx.Response.Body <- new MemoryStream()
     let expected = "Hello Julia! Lang: en, Version: 10"
 
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -1068,7 +1069,7 @@ let ``subRoutef: GET "/en/10/api/Julia" returns "Hello Julia! Lang: en, Version:
     ctx.Response.Body <- new MemoryStream()
     let expected = "Hello Julia! Lang: en, Version: 10"
 
-    task {
+    job {
         let! result = app next ctx
 
         match result with

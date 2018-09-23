@@ -20,6 +20,7 @@ open Newtonsoft.Json
 open Okapi
 open Okapi.Serialization
 open Utf8Json
+open Hopac
 
 // ---------------------------------
 // Common functions
@@ -98,7 +99,7 @@ module XmlAssert =
 // Test server/client setup
 // ---------------------------------
 
-let next : HttpFunc = Some >> Task.FromResult
+let next : HttpFunc = Some >> Job.result
 
 let createHost (configureApp      : 'Tuple -> IApplicationBuilder -> unit)
                (configureServices : IServiceCollection -> unit)

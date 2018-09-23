@@ -14,6 +14,7 @@ open Xunit
 open NSubstitute
 open Newtonsoft.Json
 open Okapi
+open Hopac
 
 [<CLIMutable>]
 type ModelWithOption =
@@ -211,7 +212,7 @@ let ``ModelParser.tryParse with complete model data but wrong union case`` () =
     let result = ModelParser.tryParse<Model> culture modelData
     match result with
     | Ok _      -> assertFail "Model had incomplete data and should have not bound successfully."
-    | Error err -> Assert.Equal("The value 'wrong' is not a valid case for type Giraffe.Tests.ModelBindingTests+Sex.", err)
+    | Error err -> Assert.Equal("The value 'wrong' is not a valid case for type Okapi.Tests.ModelBindingTests+Sex.", err)
 
 [<Fact>]
 let ``ModelParser.tryParse with complete model data but wrong data`` () =
@@ -424,8 +425,8 @@ let ``tryBindQuery with complete data and list items with []`` () =
     ctx.Request.Path.ReturnsForAnyArgs (PathString("/query")) |> ignore
     ctx.Response.Body <- new MemoryStream()
 
-    task {
-        let! result = app (Some >> Task.FromResult) ctx
+    job {
+        let! result = app (Some >> Job.result) ctx
         match result with
         | None     -> assertFailf "Result was expected to be %s" expected
         | Some ctx -> Assert.Equal(expected, getBody ctx)
@@ -452,8 +453,8 @@ let ``tryBindQuery with complete data and list items without []`` () =
     ctx.Request.Path.ReturnsForAnyArgs (PathString("/query")) |> ignore
     ctx.Response.Body <- new MemoryStream()
 
-    task {
-        let! result = app (Some >> Task.FromResult) ctx
+    job {
+        let! result = app (Some >> Job.result) ctx
         match result with
         | None     -> assertFailf "Result was expected to be %s" expected
         | Some ctx -> Assert.Equal(expected, getBody ctx)
@@ -480,8 +481,8 @@ let ``tryBindQuery without optional data`` () =
     ctx.Request.Path.ReturnsForAnyArgs (PathString("/query")) |> ignore
     ctx.Response.Body <- new MemoryStream()
 
-    task {
-        let! result = app (Some >> Task.FromResult) ctx
+    job {
+        let! result = app (Some >> Job.result) ctx
         match result with
         | None     -> assertFailf "Result was expected to be %s" expected
         | Some ctx -> Assert.Equal(expected, getBody ctx)
@@ -508,8 +509,8 @@ let ``tryBindQuery with incomplete data`` () =
     ctx.Request.Path.ReturnsForAnyArgs (PathString("/query")) |> ignore
     ctx.Response.Body <- new MemoryStream()
 
-    task {
-        let! result = app (Some >> Task.FromResult) ctx
+    job {
+        let! result = app (Some >> Job.result) ctx
         match result with
         | None     -> assertFailf "Result was expected to be %s" expected
         | Some ctx -> Assert.Equal(expected, getBody ctx)
@@ -536,8 +537,8 @@ let ``tryBindQuery with complete data but baldy formated list items`` () =
     ctx.Request.Path.ReturnsForAnyArgs (PathString("/query")) |> ignore
     ctx.Response.Body <- new MemoryStream()
 
-    task {
-        let! result = app (Some >> Task.FromResult) ctx
+    job {
+        let! result = app (Some >> Job.result) ctx
         match result with
         | None     -> assertFailf "Result was expected to be %s" expected
         | Some ctx -> Assert.Equal(expected, getBody ctx)
@@ -577,8 +578,8 @@ let ``BindJsonAsync test`` (settings) =
 
     let expected = "Name: John Doe, IsVip: true, BirthDate: 1990-04-20, Balance: 150000.50, LoyaltyPoints: 137"
 
-    task {
-        let! result = app (Some >> Task.FromResult) ctx
+    job {
+        let! result = app (Some >> Job.result) ctx
 
         match result with
         | None     -> assertFailf "Result was expected to be %s" expected
@@ -614,8 +615,8 @@ let ``BindXmlAsync test`` () =
 
     let expected = "Name: John Doe, IsVip: true, BirthDate: 1990-04-20, Balance: 150000.50, LoyaltyPoints: 137"
 
-    task {
-        let! result = app (Some >> Task.FromResult) ctx
+    job {
+        let! result = app (Some >> Job.result) ctx
 
         match result with
         | None     -> assertFailf "Result was expected to be %s" expected
@@ -652,8 +653,8 @@ let ``BindFormAsync test`` () =
 
     let expected = "Name: John Doe, IsVip: true, BirthDate: 1990-04-20, Balance: 150000.50, LoyaltyPoints: 137"
 
-    task {
-        let! result = app (Some >> Task.FromResult) ctx
+    job {
+        let! result = app (Some >> Job.result) ctx
 
         match result with
         | None     -> assertFailf "Result was expected to be %s" expected
@@ -680,8 +681,8 @@ let ``BindQueryString test`` () =
 
     let expected = "Name: John Doe, IsVip: true, BirthDate: 1990-04-20, Balance: 150000.50, LoyaltyPoints: 137"
 
-    task {
-        let! result = app (Some >> Task.FromResult) ctx
+    job {
+        let! result = app (Some >> Job.result) ctx
 
         match result with
         | None     -> assertFailf "Result was expected to be %s" expected
@@ -708,8 +709,8 @@ let ``BindQueryString culture specific test`` () =
 
     let expected = "Name: John Doe, IsVip: true, BirthDate: 1998-04-12, Balance: 150000.50, LoyaltyPoints: 137"
 
-    task {
-        let! result = app (Some >> Task.FromResult) ctx
+    job {
+        let! result = app (Some >> Job.result) ctx
 
         match result with
         | None     -> assertFailf "Result was expected to be %s" expected
@@ -720,7 +721,7 @@ let ``BindQueryString culture specific test`` () =
 let ``BindQueryString with option property test`` () =
     let testRoute queryStr expected =
         let queryHandlerWithSome next (ctx : HttpContext) =
-            task {
+            job {
                 let model = ctx.BindQueryString<ModelWithOption>()
                 Assert.Equal(expected, model)
                 return! setStatusCode 200 next ctx
@@ -735,9 +736,9 @@ let ``BindQueryString with option property test`` () =
         ctx.Request.Path.ReturnsForAnyArgs (PathString("/")) |> ignore
         ctx.Response.Body <- new MemoryStream()
 
-        app (Some >> Task.FromResult) ctx
+        app (Some >> Job.result) ctx
 
-    task {
+    job {
         let! _ = testRoute "?OptionalInt=1&OptionalString=Hi" { OptionalInt = Some 1; OptionalString = Some "Hi" }
         let! _ = testRoute "?" { OptionalInt = None; OptionalString = None }
         return!  testRoute "?OptionalInt=&OptionalString=" { OptionalInt = None; OptionalString = Some "" }
@@ -747,7 +748,7 @@ let ``BindQueryString with option property test`` () =
 let ``BindQueryString with nullable property test`` () =
     let testRoute queryStr expected =
         let queryHandlerWithSome next (ctx : HttpContext) =
-            task {
+            job {
                 let model = ctx.BindQueryString<ModelWithNullable>()
                 Assert.Equal(expected, model)
                 return! setStatusCode 200 next ctx
@@ -762,9 +763,9 @@ let ``BindQueryString with nullable property test`` () =
         ctx.Request.Path.ReturnsForAnyArgs (PathString("/")) |> ignore
         ctx.Response.Body <- new MemoryStream()
 
-        app (Some >> Task.FromResult) ctx
+        app (Some >> Job.result) ctx
 
-    task {
+    job {
         let! _ = testRoute "?NullableInt=1&NullableDateTime=2017-09-01" { NullableInt = Nullable<_>(1); NullableDateTime = Nullable<_>(DateTime(2017,09,01)) }
         let! _ = testRoute "?" { NullableInt = Nullable<_>(); NullableDateTime = Nullable<_>() }
         return!  testRoute "?NullableInt=&NullableDateTime=" { NullableInt = Nullable<_>(); NullableDateTime = Nullable<_>() }
@@ -801,8 +802,8 @@ let ``BindModelAsync with JSON content returns correct result`` (settings) =
 
     let expected = "Name: John Doe, IsVip: true, BirthDate: 1990-04-20, Balance: 150000.50, LoyaltyPoints: 137"
 
-    task {
-        let! result = app (Some >> Task.FromResult) ctx
+    job {
+        let! result = app (Some >> Job.result) ctx
 
         match result with
         | None     -> assertFailf "Result was expected to be %s" expected
@@ -840,8 +841,8 @@ let ``BindModelAsync with JSON content that uses custom serialization settings r
 
     let expected = "Name: John Doe, IsVip: true, BirthDate: 1990-04-20, Balance: 150000.50, LoyaltyPoints: 137"
 
-    task {
-        let! result = app (Some >> Task.FromResult) ctx
+    job {
+        let! result = app (Some >> Job.result) ctx
 
         match result with
         | None     -> assertFailf "Result was expected to be %s" expected
@@ -878,8 +879,8 @@ let ``BindModelAsync with XML content returns correct result`` () =
 
     let expected = "Name: John Doe, IsVip: true, BirthDate: 1990-04-20, Balance: 150000.50, LoyaltyPoints: 137"
 
-    task {
-        let! result = app (Some >> Task.FromResult) ctx
+    job {
+        let! result = app (Some >> Job.result) ctx
 
         match result with
         | None     -> assertFailf "Result was expected to be %s" expected
@@ -917,8 +918,8 @@ let ``BindModelAsync with FORM content returns correct result`` () =
 
     let expected = "Name: John Doe, IsVip: true, BirthDate: 1990-04-20, Balance: 150000.50, LoyaltyPoints: 137"
 
-    task {
-        let! result = app (Some >> Task.FromResult) ctx
+    job {
+        let! result = app (Some >> Job.result) ctx
 
         match result with
         | None     -> assertFailf "Result was expected to be %s" expected
@@ -957,8 +958,8 @@ let ``BindModelAsync with culture aware form content returns correct result`` ()
 
     let expected = "Name: John Doe, IsVip: true, BirthDate: 2015-01-04, Balance: 150000.50, LoyaltyPoints: 137"
 
-    task {
-        let! result = app (Some >> Task.FromResult) ctx
+    job {
+        let! result = app (Some >> Job.result) ctx
 
         match result with
         | None     -> assertFailf "Result was expected to be %s" expected
@@ -996,8 +997,8 @@ let ``BindModelAsync with JSON content and a specific charset returns correct re
 
     let expected = "Name: John Doe, IsVip: true, BirthDate: 1990-04-20, Balance: 150000.50, LoyaltyPoints: 137"
 
-    task {
-        let! result = app (Some >> Task.FromResult) ctx
+    job {
+        let! result = app (Some >> Job.result) ctx
 
         match result with
         | None     -> assertFailf "Result was expected to be %s" expected
@@ -1022,8 +1023,8 @@ let ``BindModelAsync during HTTP GET request with query string returns correct r
 
     let expected = "Name: John Doe, IsVip: true, BirthDate: 1990-04-20, Balance: 150000.50, LoyaltyPoints: 137"
 
-    task {
-        let! result = app (Some >> Task.FromResult) ctx
+    job {
+        let! result = app (Some >> Job.result) ctx
 
         match result with
         | None     -> assertFailf "Result was expected to be %s" expected
@@ -1049,8 +1050,8 @@ let ``BindModelAsync during HTTP GET request with culture aware query string ret
 
     let expected = "Name: John Doe, IsVip: true, BirthDate: 2013-06-15, Balance: 150000.50, LoyaltyPoints: 137"
 
-    task {
-        let! result = app (Some >> Task.FromResult) ctx
+    job {
+        let! result = app (Some >> Job.result) ctx
 
         match result with
         | None     -> assertFailf "Result was expected to be %s" expected

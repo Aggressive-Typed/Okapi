@@ -17,6 +17,7 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open Okapi
 open SampleApp.Models
 open SampleApp.HtmlViews
+open Hopac
 
 // ---------------------------------
 // Error handler
@@ -46,7 +47,7 @@ let mustBeJohn =
 
 let loginHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
+        job {
             let issuer = "http://localhost:5000"
             let claims =
                 [
@@ -57,7 +58,7 @@ let loginHandler =
             let identity = ClaimsIdentity(claims, authScheme)
             let user     = ClaimsPrincipal(identity)
 
-            do! ctx.SignInAsync(authScheme, user)
+            do! ctx.SignInAsync(authScheme, user) |> Job.awaitUnitTask
 
             return! text "Successfully logged in" next ctx
         }
@@ -77,7 +78,7 @@ let configuredHandler =
 
 let fileUploadHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
+        job {
             return!
                 (match ctx.Request.HasFormContentType with
                 | false -> RequestErrors.BAD_REQUEST "Bad request"
@@ -89,7 +90,7 @@ let fileUploadHandler =
 
 let fileUploadHandler2 =
     fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
+        job {
             let formFeature = ctx.Features.Get<IFormFeature>()
             let! form = formFeature.ReadFormAsync CancellationToken.None
             return!

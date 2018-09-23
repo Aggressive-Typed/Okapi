@@ -14,6 +14,7 @@ open Xunit
 open NSubstitute
 open Okapi
 open Okapi.GiraffeViewEngine
+open Hopac
 
 [<Fact>]
 let ``TryGetRequestHeader during HTTP GET request with returns correct result`` () =
@@ -37,8 +38,8 @@ let ``TryGetRequestHeader during HTTP GET request with returns correct result`` 
 
     let expected = "It works!"
 
-    task {
-        let! result = app (Some >> Task.FromResult) ctx
+    job {
+        let! result = app (Some >> Job.result) ctx
 
         match result with
         | None     -> assertFailf "Result was expected to be %s" expected
@@ -67,8 +68,8 @@ let ``TryGetQueryStringValue during HTTP GET request with query string returns c
 
     let expected = "1990-04-20"
 
-    task {
-        let! result = app (Some >> Task.FromResult) ctx
+    job {
+        let! result = app (Some >> Job.result) ctx
 
         match result with
         | None     -> assertFailf "Result was expected to be %s" expected
@@ -88,7 +89,7 @@ let ``WriteHtmlViewAsync should add html to the context`` () =
                         h1 [] [ Text "Hello world" ]
                     ]
                 ]
-            ctx.WriteHtmlViewAsync(htmlDoc)
+            ctx.WriteHtmlViewAsync(htmlDoc) |> Job.awaitTask
 
     let app = route "/" >=> testHandler
 
@@ -98,8 +99,8 @@ let ``WriteHtmlViewAsync should add html to the context`` () =
 
     let expected = sprintf "<!DOCTYPE html>%s<html><head></head><body><h1>Hello world</h1></body></html>" Environment.NewLine
 
-    task {
-        let! result = app (Some >> Task.FromResult) ctx
+    job {
+        let! result = app (Some >> Job.result) ctx
 
         match result with
         | None -> assertFailf "Result was expected to be %s" expected
@@ -113,7 +114,7 @@ let resultOfTask<'T> (task:Task<'T>) =
 let ``WriteHtmlFileAsync should return html from content folder`` () =
     let testHandler : HttpHandler =
         fun (next : HttpFunc) (ctx : HttpContext) ->
-            ctx.WriteHtmlFileAsync "index.html"
+            ctx.WriteHtmlFileAsync "index.html" |> Job.awaitTask
 
     let webApp = route "/" >=> testHandler
 

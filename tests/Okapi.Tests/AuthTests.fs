@@ -9,6 +9,7 @@ open FsCheck
 open FsCheck.Xunit
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Okapi
+open Hopac
 
 [<AutoOpen>]
 module TestApp =
@@ -194,7 +195,7 @@ let ``test authentication`` (givenUser: User) givenRoute expected =
         | Unauthorized -> 401, Response.AccessDenied
         | Ok content   -> 200, content
 
-    task {
+    job {
         let! result = app next ctx
 
         match result with
@@ -205,5 +206,4 @@ let ``test authentication`` (givenUser: User) givenRoute expected =
     }
     // We have to execute test synchronously
     // https://github.com/fscheck/FsCheck/issues/167
-    |> Async.AwaitTask
-    |> Async.RunSynchronously
+    |> run

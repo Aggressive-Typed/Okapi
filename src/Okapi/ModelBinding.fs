@@ -13,6 +13,7 @@ open Microsoft.Extensions.Primitives
 open Microsoft.Net.Http.Headers
 open Microsoft.FSharp.Reflection
 open FSharp.Control.Tasks.V2.ContextInsensitive
+open Hopac
 
 // ---------------------------
 // Model parsing functions
@@ -385,7 +386,7 @@ type HttpContext with
 ///
 let bindJson<'T> (f : 'T -> HttpHandler) : HttpHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
+        job {
             let! model = ctx.BindJsonAsync<'T>()
             return! f model next ctx
         }
@@ -404,7 +405,7 @@ let bindJson<'T> (f : 'T -> HttpHandler) : HttpHandler =
 ///
 let bindXml<'T> (f : 'T -> HttpHandler) : HttpHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
+        job {
             let! model = ctx.BindXmlAsync<'T>()
             return! f model next ctx
         }
@@ -424,7 +425,7 @@ let bindXml<'T> (f : 'T -> HttpHandler) : HttpHandler =
 ///
 let bindForm<'T> (culture : CultureInfo option) (f : 'T -> HttpHandler) : HttpHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
+        job {
             let! model =
                 match culture with
                 | Some c -> ctx.BindFormAsync<'T> c
@@ -452,7 +453,7 @@ let tryBindForm<'T> (parsingErrorHandler : string -> HttpHandler)
                     (culture             : CultureInfo option)
                     (successhandler      : 'T -> HttpHandler) : HttpHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
+        job {
             let! result =
                 match culture with
                 | Some c -> ctx.TryBindFormAsync<'T> c
@@ -529,7 +530,7 @@ let tryBindQuery<'T> (parsingErrorHandler : string -> HttpHandler)
 ///
 let bindModel<'T> (culture : CultureInfo option) (f : 'T -> HttpHandler) : HttpHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
+        job {
             let! model =
                 match culture with
                 | Some c -> ctx.BindModelAsync<'T> c

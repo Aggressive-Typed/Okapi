@@ -11,6 +11,7 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open Okapi
 open Okapi.GiraffeViewEngine
 open GoogleAuthApp.HttpsConfig
+open Hopac
 
 // ---------------------------------
 // Web app
@@ -106,10 +107,10 @@ module Handlers =
 
     let challenge (scheme : string) (redirectUri : string) : HttpHandler =
         fun (next : HttpFunc) (ctx : HttpContext) ->
-            task {
+            job {
                 do! ctx.ChallengeAsync(
                         scheme,
-                        AuthenticationProperties(RedirectUri = redirectUri))
+                        AuthenticationProperties(RedirectUri = redirectUri)) |> Job.awaitUnitTask
                 return! next ctx
             }
 

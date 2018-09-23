@@ -10,6 +10,7 @@ open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.DependencyInjection.Extensions
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Okapi.Serialization
+open Hopac
 
 // ---------------------------
 // Default middleware
@@ -22,13 +23,13 @@ type GiraffeMiddleware (next          : RequestDelegate,
     do if isNull next then raise (ArgumentNullException("next"))
 
     // pre-compile the handler pipeline
-    let func : HttpFunc = handler (Some >> Task.FromResult)
+    let func : HttpFunc = handler (Some >> Job.result)
 
     member __.Invoke (ctx : HttpContext) =
         task {
             let start = System.Diagnostics.Stopwatch.GetTimestamp();
 
-            let! result = func ctx
+            let! result = (func ctx |> startAsTask)
             let  logger = loggerFactory.CreateLogger<GiraffeMiddleware>()
 
             if logger.IsEnabled LogLevel.Debug then
@@ -45,7 +46,9 @@ type GiraffeMiddleware (next          : RequestDelegate,
                     elapsedMs)
 
             if (result.IsNone) then
-                return! next.Invoke ctx
+                return next.Invoke ctx 
+            else
+                return Task.CompletedTask 
         }
 
 // ---------------------------
@@ -64,8 +67,8 @@ type GiraffeErrorHandlerMiddleware (next          : RequestDelegate,
             with ex ->
                 let logger = loggerFactory.CreateLogger<GiraffeErrorHandlerMiddleware>()
                 try
-                    let func = (Some >> Task.FromResult)
-                    let! _ = errorHandler ex logger func ctx
+                    let func = (Some >> Job.result)
+                    let! _ = (errorHandler ex logger func ctx) |> startAsTask
                     return ()
                 with ex2 ->
                     logger.LogError(EventId(0), ex,  "An unhandled exception has occurred while executing the request.")

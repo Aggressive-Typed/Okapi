@@ -10,6 +10,7 @@ open Microsoft.AspNetCore.Http.Extensions
 open Microsoft.Extensions.Primitives
 open Microsoft.Net.Http.Headers
 open FSharp.Control.Tasks.V2.ContextInsensitive
+open Hopac
 
 // ---------------------------
 // HTTP Range parsing
@@ -259,7 +260,7 @@ let streamData (enableRangeProcessing : bool)
                (lastModified          : DateTimeOffset option)
                : HttpHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
-        ctx.WriteStreamAsync enableRangeProcessing stream eTag lastModified
+        ctx.WriteStreamAsync enableRangeProcessing stream eTag lastModified |> Job.awaitTask
 
 /// **Description**
 ///
@@ -284,4 +285,4 @@ let streamFile (enableRangeProcessing : bool)
                (lastModified          : DateTimeOffset option)
                : HttpHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
-        ctx.WriteFileStreamAsync enableRangeProcessing filePath eTag lastModified
+        ctx.WriteFileStreamAsync enableRangeProcessing filePath eTag lastModified |> Job.awaitTask

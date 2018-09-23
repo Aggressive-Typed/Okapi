@@ -1,3 +1,5 @@
+## This is fork of original Giraffe framework. Okapi is small sister of Giraffe with use jobs instead of tasks
+
 # Giraffe
 
 ![Giraffe](https://raw.githubusercontent.com/giraffe-fsharp/Giraffe/develop/giraffe.png)

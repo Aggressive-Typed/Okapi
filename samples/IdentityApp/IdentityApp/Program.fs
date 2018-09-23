@@ -15,6 +15,7 @@ open Microsoft.EntityFrameworkCore
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Okapi
 open Okapi.GiraffeViewEngine
+open Hopac
 
 // ---------------------------------
 // View engine
@@ -119,7 +120,7 @@ let showErrors (errors : IdentityError seq) =
 
 let registerHandler : HttpHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
+        job {
             let! model       = ctx.BindFormAsync<RegisterModel>()
             let  user        = IdentityUser(UserName = model.UserName, Email = model.Email)
             let  userManager = ctx.GetService<UserManager<IdentityUser>>()
@@ -129,13 +130,13 @@ let registerHandler : HttpHandler =
             | false -> return! showErrors result.Errors next ctx
             | true  ->
                 let signInManager = ctx.GetService<SignInManager<IdentityUser>>()
-                do! signInManager.SignInAsync(user, true)
+                do! signInManager.SignInAsync(user, true) |> Job.awaitUnitTask
                 return! redirectTo false "/user" next ctx
         }
 
 let loginHandler : HttpHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
+        job {
             let! model = ctx.BindFormAsync<LoginModel>()
             let signInManager = ctx.GetService<SignInManager<IdentityUser>>()
             let! result = signInManager.PasswordSignInAsync(model.UserName, model.Password, true, false)
@@ -146,7 +147,7 @@ let loginHandler : HttpHandler =
 
 let userHandler : HttpHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
+        job {
             let userManager = ctx.GetService<UserManager<IdentityUser>>()
             let! user = userManager.GetUserAsync ctx.User
             return! (user |> userPage |> htmlView) next ctx
@@ -157,9 +158,9 @@ let mustBeLoggedIn : HttpHandler =
 
 let logoutHandler : HttpHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
+        job {
             let signInManager = ctx.GetService<SignInManager<IdentityUser>>()
-            do! signInManager.SignOutAsync()
+            do! signInManager.SignOutAsync() |> Job.awaitUnitTask
             return! (redirectTo false "/") next ctx
         }
 

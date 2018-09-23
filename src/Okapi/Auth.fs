@@ -5,7 +5,8 @@ open System.Security.Claims
 open Microsoft.AspNetCore.Http
 open Microsoft.AspNetCore.Authentication
 open Microsoft.AspNetCore.Authorization
-open FSharp.Control.Tasks.V2.ContextInsensitive
+//open FSharp.Control.Tasks.V2.ContextInsensitive
+open Hopac
 
 /// **Description**
 ///
@@ -21,8 +22,8 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 ///
 let challenge (authScheme : string) : HttpHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
-            do! ctx.ChallengeAsync authScheme
+        job {
+            do! (ctx.ChallengeAsync authScheme |> Job.awaitUnitTask)
             return! next ctx
         }
 
@@ -40,8 +41,8 @@ let challenge (authScheme : string) : HttpHandler =
 ///
 let signOut (authScheme : string) : HttpHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
-            do! ctx.SignOutAsync authScheme
+        job {
+            do! (ctx.SignOutAsync authScheme |> Job.awaitUnitTask)
             return! next ctx
         }
 
@@ -132,7 +133,7 @@ let requiresRoleOf (roles : string list) (authFailedHandler : HttpHandler) : Htt
 ///
 let authorizeByPolicyName (policyName : string) (authFailedHandler : HttpHandler) : HttpHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
+        job {
             let authService = ctx.GetService<IAuthorizationService>()
             let! result = authService.AuthorizeAsync (ctx.User, policyName)
             return! (if result.Succeeded then next else authFailedHandler finish) ctx
@@ -153,7 +154,7 @@ let authorizeByPolicyName (policyName : string) (authFailedHandler : HttpHandler
 ///
 let authorizeByPolicy (policy : AuthorizationPolicy) (authFailedHandler : HttpHandler) : HttpHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
+        job {
             let authService = ctx.GetService<IAuthorizationService>()
             let! result = authService.AuthorizeAsync (ctx.User, policy)
             return! (if result.Succeeded then next else authFailedHandler finish) ctx

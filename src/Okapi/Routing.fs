@@ -8,6 +8,7 @@ open Microsoft.AspNetCore.Http
 open Microsoft.Extensions.Primitives
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Okapi.FormatExpressions
+open Hopac
 
 // ---------------------------
 // Private sub route helper functions
@@ -28,7 +29,7 @@ let private getPath (ctx : HttpContext) =
 
 let private handlerWithRootedPath (path : string) (handler : HttpHandler) : HttpHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
-        task {
+        job {
             let savedSubPath = getSavedSubPath ctx
             ctx.Items.Item RouteKey <- ((savedSubPath |> Option.defaultValue "") + path)
             let! result = handler next ctx

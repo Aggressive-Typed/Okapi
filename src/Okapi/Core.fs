@@ -10,6 +10,7 @@ open Microsoft.Extensions.Logging
 open Microsoft.Net.Http.Headers
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Okapi.Serialization
+open Hopac
 
 // ---------------------------
 // Giraffe exception types
@@ -225,7 +226,7 @@ type HttpContext with
 ///
 /// If the result is `Some HttpContext` then the Giraffe middleware will return the response to the client and end the pipeline. However, if the result is `None` then the Giraffe middleware will continue the ASP.NET Core pipeline by invoking the `next` middleware.
 ///
-type HttpFuncResult = Task<HttpContext option>
+type HttpFuncResult = Job<HttpContext option>
 
 /// **Description**
 ///
@@ -275,13 +276,13 @@ let inline warbler f (next : HttpFunc) (ctx : HttpContext) = f (next, ctx) next 
 ///
 /// Use `abort` to shortcircuit the `HttpHandler` pipeline and return `None` to the surrounding `HttpHandler` or the Giraffe middleware (which would subsequently invoke the `next` middleware as a result of it).
 ///
-let internal abort  : HttpFuncResult = Task.FromResult None
+let internal abort  : HttpFuncResult = Job.result None
 
 /// **Description**
 ///
 /// Use `finish` to shortcircuit the `HttpHandler` pipeline and return `Some HttpContext` to the surrounding `HttpHandler` or the Giraffe middleware (which would subsequently end the pipeline by returning the response back to the client).
 ///
-let internal finish : HttpFunc = Some >> Task.FromResult
+let internal finish : HttpFunc = Some >> Job.result
 
 // ---------------------------
 // Default Combinators
@@ -317,7 +318,7 @@ let (>=>) = compose
 ///
 let rec private chooseHttpFunc (funcs : HttpFunc list) : HttpFunc =
     fun (ctx : HttpContext) ->
-        task {
+        job {
             match funcs with
             | [] -> return None
             | func :: tail ->
@@ -461,4 +462,4 @@ let mustAccept (mimeTypes : string list) : HttpHandler =
 let redirectTo (permanent : bool) (location : string) : HttpHandler  =
     fun (next : HttpFunc) (ctx : HttpContext) ->
         ctx.Response.Redirect(location, permanent)
-        Task.FromResult (Some ctx)
+        Job.result (Some ctx)

@@ -8,6 +8,7 @@ open Microsoft.AspNetCore.Http
 open Microsoft.Net.Http.Headers
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Okapi.GiraffeViewEngine
+open Hopac
 
 // ---------------------------
 // HttpContext extensions
@@ -221,7 +222,7 @@ type HttpContext with
 ///
 let setBody (bytes : byte array) : HttpHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
-        ctx.WriteBytesAsync bytes
+        ctx.WriteBytesAsync bytes |> Job.awaitTask
 
 /// **Description**
 ///
@@ -237,7 +238,7 @@ let setBody (bytes : byte array) : HttpHandler =
 ///
 let setBodyFromString (str : string) : HttpHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
-        ctx.WriteStringAsync str
+        ctx.WriteStringAsync str |> Job.awaitTask
 
 /// **Description**
 ///
@@ -253,7 +254,7 @@ let setBodyFromString (str : string) : HttpHandler =
 ///
 let text (str : string) : HttpHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
-        ctx.WriteTextAsync str
+        ctx.WriteTextAsync str |> Job.awaitTask
 
 /// **Description**
 ///
@@ -273,7 +274,7 @@ let text (str : string) : HttpHandler =
 ///
 let json<'T> (dataObj : 'T) : HttpHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
-        ctx.WriteJsonAsync dataObj
+        ctx.WriteJsonAsync dataObj |> Job.awaitTask
 
 /// **Description**
 ///
@@ -293,7 +294,7 @@ let json<'T> (dataObj : 'T) : HttpHandler =
 ///
 let jsonChunked<'T> (dataObj : 'T) : HttpHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
-        ctx.WriteJsonChunkedAsync dataObj
+        ctx.WriteJsonChunkedAsync dataObj |> Job.awaitTask
 
 /// **Description**
 ///
@@ -313,7 +314,7 @@ let jsonChunked<'T> (dataObj : 'T) : HttpHandler =
 ///
 let xml (dataObj : obj) : HttpHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
-        ctx.WriteXmlAsync dataObj
+        ctx.WriteXmlAsync dataObj |> Job.awaitTask
 
 /// **Description**
 ///
@@ -331,7 +332,7 @@ let xml (dataObj : obj) : HttpHandler =
 ///
 let htmlFile (filePath : string) : HttpHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
-        ctx.WriteHtmlFileAsync filePath
+        ctx.WriteHtmlFileAsync filePath |> Job.awaitTask
 
 /// **Description**
 ///
@@ -349,7 +350,7 @@ let htmlFile (filePath : string) : HttpHandler =
 ///
 let htmlString (html : string) : HttpHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
-        ctx.WriteHtmlStringAsync html
+        ctx.WriteHtmlStringAsync html |> Job.awaitTask
 
 /// **Description**
 ///
@@ -367,4 +368,4 @@ let htmlString (html : string) : HttpHandler =
 ///
 let htmlView (htmlView : XmlNode) : HttpHandler =
     fun (next : HttpFunc) (ctx : HttpContext) ->
-        ctx.WriteHtmlViewAsync htmlView
+        ctx.WriteHtmlViewAsync htmlView |> Job.awaitTask
