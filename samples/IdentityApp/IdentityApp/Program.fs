@@ -13,8 +13,8 @@ open Microsoft.AspNetCore.Identity
 open Microsoft.AspNetCore.Identity.EntityFrameworkCore
 open Microsoft.EntityFrameworkCore
 open FSharp.Control.Tasks.V2.ContextInsensitive
-open Giraffe
-open Giraffe.GiraffeViewEngine
+open Okapi
+open Okapi.GiraffeViewEngine
 
 // ---------------------------------
 // View engine

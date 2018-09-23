@@ -1,5 +1,5 @@
 [<AutoOpen>]
-module Giraffe.Auth
+module Okapi.Auth
 
 open System.Security.Claims
 open Microsoft.AspNetCore.Http

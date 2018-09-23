@@ -1,8 +1,8 @@
-module Giraffe.Tests.ShortGuidTests
+module Okapi.Tests.ShortGuidTests
 
 open System
 open Xunit
-open Giraffe.Common
+open Okapi.Common
 
 // ---------------------------------
 // Short Guid Tests

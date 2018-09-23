@@ -1,4 +1,4 @@
-module Giraffe.FormatExpressions
+module Okapi.FormatExpressions
 
 open System
 open System.Text.RegularExpressions

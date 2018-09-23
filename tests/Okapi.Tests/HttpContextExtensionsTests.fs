@@ -1,4 +1,4 @@
-module Giraffe.Tests.HttpContextExtensionsTests
+module Okapi.Tests.HttpContextExtensionsTests
 
 open System
 open System.IO
@@ -12,8 +12,8 @@ open Microsoft.AspNetCore.TestHost
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Xunit
 open NSubstitute
-open Giraffe
-open Giraffe.GiraffeViewEngine
+open Okapi
+open Okapi.GiraffeViewEngine
 
 [<Fact>]
 let ``TryGetRequestHeader during HTTP GET request with returns correct result`` () =

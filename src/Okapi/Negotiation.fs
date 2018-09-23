@@ -1,5 +1,5 @@
 [<AutoOpen>]
-module Giraffe.Negotiation
+module Okapi.Negotiation
 
 open System
 open System.Collections.Generic

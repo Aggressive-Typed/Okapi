@@ -1,6 +1,6 @@
 module SampleApp.HtmlViews
 
-open Giraffe.GiraffeViewEngine
+open Okapi.GiraffeViewEngine
 open SampleApp.Models
 
 let layout (content: XmlNode list) =

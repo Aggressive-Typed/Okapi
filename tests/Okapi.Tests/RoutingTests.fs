@@ -1,4 +1,4 @@
-module Giraffe.Tests.RoutingTests
+module Okapi.Tests.RoutingTests
 
 open System
 open System.IO
@@ -7,7 +7,7 @@ open Microsoft.AspNetCore.Http
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Xunit
 open NSubstitute
-open Giraffe
+open Okapi
 
 // ---------------------------------
 // route Tests

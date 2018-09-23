@@ -1,5 +1,5 @@
 [<AutoOpen>]
-module Giraffe.ResponseCaching
+module Okapi.ResponseCaching
 
 open System
 open Microsoft.Extensions.Primitives

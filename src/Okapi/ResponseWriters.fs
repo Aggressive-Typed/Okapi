@@ -1,5 +1,5 @@
 [<AutoOpen>]
-module Giraffe.ResponseWriters
+module Okapi.ResponseWriters
 
 open System.IO
 open System.Text
@@ -7,7 +7,7 @@ open System.Buffers
 open Microsoft.AspNetCore.Http
 open Microsoft.Net.Http.Headers
 open FSharp.Control.Tasks.V2.ContextInsensitive
-open Giraffe.GiraffeViewEngine
+open Okapi.GiraffeViewEngine
 
 // ---------------------------
 // HttpContext extensions

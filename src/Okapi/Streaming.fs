@@ -1,5 +1,5 @@
 [<AutoOpen>]
-module Giraffe.Streaming
+module Okapi.Streaming
 
 open System
 open System.IO

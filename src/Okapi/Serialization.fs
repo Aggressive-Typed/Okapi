@@ -1,4 +1,4 @@
-namespace Giraffe.Serialization
+namespace Okapi.Serialization
 
 // ---------------------------
 // JSON

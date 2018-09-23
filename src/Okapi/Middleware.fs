@@ -1,5 +1,5 @@
 [<AutoOpen>]
-module Giraffe.Middleware
+module Okapi.Middleware
 
 open System
 open System.Threading.Tasks
@@ -9,7 +9,7 @@ open Microsoft.Extensions.Logging
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.DependencyInjection.Extensions
 open FSharp.Control.Tasks.V2.ContextInsensitive
-open Giraffe.Serialization
+open Okapi.Serialization
 
 // ---------------------------
 // Default middleware

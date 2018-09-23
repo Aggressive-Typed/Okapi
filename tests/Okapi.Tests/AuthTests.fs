@@ -1,4 +1,4 @@
-module Giraffe.Tests.AuthTests
+module Okapi.Tests.AuthTests
 
 open System.IO
 open System.Security.Claims
@@ -8,7 +8,7 @@ open NSubstitute
 open FsCheck
 open FsCheck.Xunit
 open FSharp.Control.Tasks.V2.ContextInsensitive
-open Giraffe
+open Okapi
 
 [<AutoOpen>]
 module TestApp =

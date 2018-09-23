@@ -1,5 +1,5 @@
 [<AutoOpen>]
-module Giraffe.Tests.Helpers
+module Okapi.Tests.Helpers
 
 open System
 open System.IO
@@ -17,8 +17,8 @@ open Microsoft.Extensions.DependencyInjection
 open Xunit
 open NSubstitute
 open Newtonsoft.Json
-open Giraffe
-open Giraffe.Serialization
+open Okapi
+open Okapi.Serialization
 open Utf8Json
 
 // ---------------------------------

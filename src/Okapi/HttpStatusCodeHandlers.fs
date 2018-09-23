@@ -1,5 +1,5 @@
 [<AutoOpen>]
-module Giraffe.HttpStatusCodeHandlers
+module Okapi.HttpStatusCodeHandlers
 
 /// **Description**
 ///

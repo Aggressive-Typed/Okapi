@@ -5,7 +5,7 @@
 /// - `opt {}`: Enables control flow and binding of Option<'T> objects
 /// - `res {}`: Enables control flow and binding of Result<'T, 'TError> objects
 ///
-module Giraffe.ComputationExpressions
+module Okapi.ComputationExpressions
 
 type OptionBuilder() =
     member __.Bind(v, f)   = Option.bind f v

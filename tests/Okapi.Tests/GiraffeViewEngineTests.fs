@@ -1,7 +1,7 @@
-module Giraffe.Tests.GiraffeViewEngineTests
+module Okapi.Tests.GiraffeViewEngineTests
 
 open Xunit
-open Giraffe.GiraffeViewEngine
+open Okapi.GiraffeViewEngine
 
 [<Fact>]
 let ``Single html root should compile`` () =

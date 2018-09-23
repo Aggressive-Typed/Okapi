@@ -1,5 +1,5 @@
 [<AutoOpen>]
-module Giraffe.Core
+module Okapi.Core
 
 open System
 open System.Threading.Tasks
@@ -9,7 +9,7 @@ open Microsoft.Extensions.Primitives
 open Microsoft.Extensions.Logging
 open Microsoft.Net.Http.Headers
 open FSharp.Control.Tasks.V2.ContextInsensitive
-open Giraffe.Serialization
+open Okapi.Serialization
 
 // ---------------------------
 // Giraffe exception types

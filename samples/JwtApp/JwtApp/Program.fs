@@ -11,7 +11,7 @@ open Microsoft.AspNetCore.Http
 open Microsoft.Extensions.Logging
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.IdentityModel.Tokens
-open Giraffe
+open Okapi
 
 // ---------------------------------
 // Web app

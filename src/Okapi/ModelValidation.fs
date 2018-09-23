@@ -1,5 +1,5 @@
 [<AutoOpen>]
-module Giraffe.ModelValidation
+module Okapi.ModelValidation
 
 /// **Description**
 ///

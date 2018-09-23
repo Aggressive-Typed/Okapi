@@ -1,8 +1,8 @@
-module Giraffe.Tests.FormatExpressionTests
+module Okapi.Tests.FormatExpressionTests
 
 open System
 open Xunit
-open Giraffe.FormatExpressions
+open Okapi.FormatExpressions
 
 // ---------------------------------
 // Positive Tests

@@ -1,5 +1,5 @@
 [<AutoOpen>]
-module Giraffe.Common
+module Okapi.Common
 
 open System
 open System.IO

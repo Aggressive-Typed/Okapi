@@ -1,4 +1,4 @@
-module Giraffe.Tests.StreamingTests
+module Okapi.Tests.StreamingTests
 
 open System
 open System.Net
@@ -6,7 +6,7 @@ open System.Net.Http
 open Microsoft.AspNetCore.Builder
 open Microsoft.Extensions.DependencyInjection
 open Xunit
-open Giraffe
+open Okapi
 open Microsoft.Extensions.Logging
 
 // ---------------------------------

@@ -1,5 +1,5 @@
 [<AutoOpen>]
-module Giraffe.ModelBinding
+module Okapi.ModelBinding
 
 open System
 open System.IO

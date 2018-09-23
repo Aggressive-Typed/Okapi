@@ -1,4 +1,4 @@
-module Giraffe.Tests.ModelBindingTests
+module Okapi.Tests.ModelBindingTests
 
 open System
 open System.Globalization
@@ -13,7 +13,7 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open Xunit
 open NSubstitute
 open Newtonsoft.Json
-open Giraffe
+open Okapi
 
 [<CLIMutable>]
 type ModelWithOption =

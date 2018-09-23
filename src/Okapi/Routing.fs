@@ -1,5 +1,5 @@
 [<AutoOpen>]
-module Giraffe.Routing
+module Okapi.Routing
 
 open System
 open System.Collections.Generic
@@ -7,7 +7,7 @@ open System.Text.RegularExpressions
 open Microsoft.AspNetCore.Http
 open Microsoft.Extensions.Primitives
 open FSharp.Control.Tasks.V2.ContextInsensitive
-open Giraffe.FormatExpressions
+open Okapi.FormatExpressions
 
 // ---------------------------
 // Private sub route helper functions

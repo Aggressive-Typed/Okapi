@@ -1,4 +1,4 @@
-module Giraffe.Tests.HttpHandlerTests
+module Okapi.Tests.HttpHandlerTests
 
 open System
 open System.IO
@@ -8,8 +8,8 @@ open Microsoft.Extensions.Primitives
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Xunit
 open NSubstitute
-open Giraffe
-open Giraffe.GiraffeViewEngine
+open Okapi
+open Okapi.GiraffeViewEngine
 
 // ---------------------------------
 // Test Types
